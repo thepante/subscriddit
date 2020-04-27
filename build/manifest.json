@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "name": "Thread Subscribe for Reddit",
+  "description": "Subscribe to threads and get notified when there are new comments",
+  "version": "0.1.0",
+  "content_scripts": [
+    {
+      "matches": ["https://www.reddit.com/*"],
+      "css": ["styles.css"],
+      "js":  ["content.js"]
+    }
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "icons": {
+    "18": "16.png",
+    "48": "48.png"
+  },    
+  "options_ui": {
+    "page": "options.html"
+  },
+  "permissions": [
+    "https://www.reddit.com/*",
+    "webRequest",
+    "activeTab",
+    "storage",
+    "notifications"
+  ]
+}
