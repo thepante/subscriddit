@@ -21,3 +21,6 @@ zangodb, jquery and timeago.js
 ```
 npm install zangodb jquery timeago.js
 ```
+----
+
+Icons thanks to icons8.com
