@@ -1,5 +1,5 @@
-### Web extension to subscribe submissions on Reddit
-My personal CS50 final project.
+### Thread Subscribe for Reddit
+Web extension to subscribe submissions on Reddit, this is my personal CS50 final project.
 
 ----
 
@@ -21,3 +21,6 @@ zangodb, jquery and timeago.js
 ```
 npm install zangodb jquery timeago.js
 ```
+----
+
+Icons thanks to icons8.com
