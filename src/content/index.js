@@ -3,7 +3,6 @@ import $ from "jquery";
 
 // Communicate with background
 var bg = chrome.runtime.connect({name:"port-from-cs"});
-bg.postMessage({greeting: "--- Reddit page loaded"});
 
 var div = document.getElementsByClassName("_3-miAEojrCvx_4FQ8x3P-s")[0];
 var button = document.getElementById("subtothread");
@@ -178,7 +177,12 @@ var observer = new MutationObserver(function(mutations) {
 var config = { attributes: true, childList: false, characterData: true };
 observer.observe(target, config);
 
-post_detection();
+// check for post only if tab is active
+// otherwise when extension loads, firefox will run this content script in all opened reddit tabs
+if (!document.hidden) {
+	bg.postMessage({greeting: "--- Reddit page loaded"});
+	post_detection();
+}
 
 console.log("-------");
 console.log("OK - Loaded correctly");
