@@ -16,59 +16,31 @@ bg.onMessage.addListener(async function(m) {
 	if (m.scan) {
 		check_apply();
 	}
-
-	// Receive subscription status
-	if (m.check) {
-		let msg = "Background notifies status as:";
-
-		// setting status this way because idk why but can't pass this boolean
-		// so workaround is passing it as string and convert
-		subscription.status = (m.check == 'true');
-		console.log(msg, m.check);
-	}
 	
-	// Let background call the button when data is ready
-	if (m.button) {	
-		put_button();
-	}
-
-	// Get parsed data from back
+	// When receive parsed data from back
 	if (m.post) {
 		post = m.post;
-		console.log("Got parsed data from background js", post._id);
-		// console.log(post);
+		console.log("Got parsed data from background js for thread", post._id);
+
+		if (m.post.subscribed !== undefined) {
+			subscription_button.subscribed = true;
+		} else {
+			subscription_button.subscribed = false;
+		}
+
+		console.log("Background notifies status as:", subscription_button.subscribed, m.post.subscribed);
+		put_button();
 	}
 
 });
 
-// Clean previous button if addon its reloaded
-async function clean_prev_button(){
-	if (button){
-		button.parentNode.removeChild(button);
-		console.log("Removed previous button...");
-	}
-}
-clean_prev_button();
 
-// For debbuging popup notice
-// has to keep to erase previous one when reload extension
-if (document.getElementById("rthreads-state")){
-  $("#rthreads-state").remove();
-  console.log("borrado rthreads-state popup");
-}
+var subscription_button = {
+	subscribed: undefined,
 
-// Identify subscription status
-let subscription = {
-	stat: undefined,
-	get status() {
-		return this.stat;
-	},
-	set status(now) {
-		this.stat = now;
-	},
 	get label() {
 		let text = {};
-		if (this.status) {
+		if (this.subscribed) {
 			text = {
 				// when is subscribed
 				button: "Unsubscribe",
@@ -85,85 +57,91 @@ let subscription = {
 			}
 		}
 		return text;
+	},
+
+	// Update subscription status
+	change_status() {
+		this.subscribed = !this.subscribed;
+
+		let btn = document.getElementById("subtothread");
+		let text = btn.getElementsByTagName("span")[0];
+		text.innerHTML = this.label.button;
+	},
+
+	// Create and append button
+	append() {
+		let btn = document.createElement("div");
+		btn.innerHTML = `
+				<button id="subtothread" class="kU8ebCMnbXfjCWfqn0WPb">
+						<i class="icon icon-live xwmljjCrovDE5C9MasZja _1GQDWqbF-wkYWbrpmOvjqJ"></i>
+						<span class="_6_44iTtZoeY6_XChKt5b0">${this.label.button}</span>
+				</button>
+		`;
+		let buttonsb = document.querySelector('*[data-test-id="post-content"] ._3-miAEojrCvx_4FQ8x3P-s');
+
+		buttonsb.appendChild(btn);
+
+		// Button event handler
+		btn.addEventListener("click", function() {
+			subscription_button.clicked();
+		});
+	},
+
+	// Button action when its pressed
+	async clicked() {
+
+		if (this.subscribed) { await subscription.remove() } 
+		else { await subscription.add() }
+
+		this.change_status();
+		document.activeElement.blur();
+		popup_show_state();
+
+		// print status change
+		console.log(`${this.label.popup}: ${post._id} from ${post.sub} subscribed ${format(post.subscribed)}`);
+		
+	}
+
+}
+
+var subscription = {
+	// Create a new subscription
+	async add() {
+		post["subscribed"] = Date.now();
+		await bg.postMessage({add: post});
+		console.log("SUBBED!");
+	},
+
+	// Delete subscription
+	async remove() {
+		await bg.postMessage({remove: post});
+		console.log("UNSUBBED!");
 	}
 }
 
 
-// Update subscription status
-function change_status() {
-	subscription.status = !subscription.status;
-
-	let btn = document.getElementById("subtothread");
-	let text = btn.getElementsByTagName("span")[0];
-	text.innerHTML = subscription.label.button;
+// For debbuging popup notice
+// has to keep to erase previous one when reload extension
+if (document.getElementById("rthreads-state")){
+  $("#rthreads-state").remove();
+  console.log("borrado rthreads-state popup");
 }
 
 // Call button insert
 async function put_button(){
-
-	await clean_prev_button();
-	$(div).ready(function() {
-		button_sub();
-	});
-	console.log(`subscription.status is set to ${subscription.status}`);
-}
-
-// Create and append button
-function button_sub() {
-	let btn = document.createElement("div");
-	btn.innerHTML = `
-			<button id="subtothread" class="kU8ebCMnbXfjCWfqn0WPb">
-					<i class="icon icon-live xwmljjCrovDE5C9MasZja _1GQDWqbF-wkYWbrpmOvjqJ"></i>
-					<span class="_6_44iTtZoeY6_XChKt5b0">${subscription.label.button}</span>
-			</button>
-	`;
-	let buttonsb = document.querySelector('*[data-test-id="post-content"] ._3-miAEojrCvx_4FQ8x3P-s');
-
-		buttonsb.appendChild(btn);
-
-	// Button event handler
-	btn.addEventListener("click", function() {
-		button_action();
-	});
-}
-
-// Button action when its pressed
-async function button_action() {
-
-	if (subscription.status) { 
-		await remove_subscription();	
-	} 
-	else { 
-		await add_subscription(); 
+	// Clean previous button if addon its reloaded
+	if (button){
+		button.parentNode.removeChild(button);
+		console.log("Removed previous button...");
 	}
-
-	change_status();
-	document.activeElement.blur();
-	state_change_popup();
-
-	// print status change
-	console.log(`${subscription.label.popup}: ${post._id} from ${post.sub} subscribed ${format(post.time)}`);
-	
-}
-
-// Create a new subscription
-async function add_subscription() {
-	post["time"] = Date.now();
-	await bg.postMessage({add: post});
-	console.log("SUBBED!");
-
-}
-
-// Delete subscription
-async function remove_subscription() {
-
-	await bg.postMessage({remove: post});
-	console.log("UNSUBBED!");
-
+	$(div).ready(function() {
+		subscription_button.append();
+	});
+	// console.log(`subscription_button.subscribed is set to ${subscription_button.subscribed}`);
 }
 
 // State notification popup
-function state_change_popup() {
+function popup_show_state() {
 
 	// delete (if) previous one & add new
 	let button = "#rthreads-state";
@@ -171,7 +149,7 @@ function state_change_popup() {
 	$("body").append(`
 	<div id="rthreads-state">
 		<div class="rthreads-container">
-			<span>${subscription.label.popup} subscription to thread</span>
+			<span>${subscription_button.label.popup} subscription to thread</span>
 		</div>
 	</div>
 	`);
