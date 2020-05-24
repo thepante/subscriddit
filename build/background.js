@@ -16935,35 +16935,33 @@ async function get_comments_rss(thread, saved_comments, new_comments) {
 
       if (comment == '[removed]' || comment == '[deleted]') {
         console.log(log_msg + ' Skipped deleted comment');
+      } else if (updated < check) {
+        console.log(log_msg + ' Skipped old comment');
+      } else {
+
+        var author = el.find("author").find("name").text().substr(1) + ":";
+        var permalink = el.find("link").attr('href') + "?context=1";
+
+        console.log("------------------------");
+        console.log("comment: " + comment);
+        console.log(" author: " + author);
+        console.log("   link: " + permalink);
+
+        // Update check timestamp
+        await subs.update({ _id: thread }, {
+          comments: saved_comments + new_comments,
+          check: Date.now()
+        }, function (error) {
+          if (error) {
+            throw error;
+          }
+        });
+
+        notification.send(title, comment, author, permalink);
+        await new Promise(function (r) {
+          return setTimeout(r, 1000);
+        });
       }
-      // else if (updated < check) {
-      //   console.log(`${log_msg} Skipped old comment`);
-      // }
-      else {
-
-          var author = el.find("author").find("name").text().substr(1) + ":";
-          var permalink = el.find("link").attr('href') + "?context=1";
-
-          console.log("------------------------");
-          console.log("comment: " + comment);
-          console.log(" author: " + author);
-          console.log("   link: " + permalink);
-
-          // Update check timestamp
-          await subs.update({ _id: thread }, {
-            comments: saved_comments + new_comments,
-            check: Date.now()
-          }, function (error) {
-            if (error) {
-              throw error;
-            }
-          });
-
-          notification.send(title, comment, author, permalink);
-          await new Promise(function (r) {
-            return setTimeout(r, 1000);
-          });
-        }
     });
   });
 }

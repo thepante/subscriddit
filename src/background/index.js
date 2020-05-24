@@ -76,7 +76,7 @@ var post = {
     console.log(`${this.data._id} 🡺 Thread data parsed...`);
     
     this.notify_state();
-    
+
   },
 
   async notify_state(){
@@ -225,9 +225,9 @@ async function get_comments_rss(thread, saved_comments, new_comments){
       if (comment == '[removed]' || comment == '[deleted]') {
         console.log(`${log_msg} Skipped deleted comment`);
       } 
-      // else if (updated < check) {
-      //   console.log(`${log_msg} Skipped old comment`);
-      // }
+      else if (updated < check) {
+        console.log(`${log_msg} Skipped old comment`);
+      }
       else {
 
         let author = el.find("author").find("name").text().substr(1)+":";
