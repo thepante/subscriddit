@@ -3,7 +3,7 @@ import { format } from 'timeago.js';
 import $ from 'jquery';
 
 // Initialize db
-let db = new zango.Db('rts', { subscription: ['_id,comments,sub,title,url,subscribed,check'] });
+let db = new zango.Db('rts', { subscription: ['_id'] });
 let subs = db.collection('subscription');
 
 // Default settings | h/m/l = priority, i = interval
@@ -162,7 +162,7 @@ var scanner = {
         await check_post.new_comments(thread._id, thread.comments);
       })
       // .then(console.log(`threads in database scanned`))
-      .catch(error => console.error(error));
+      .catch(error => console.error(error, cap));
   },
 
   // Call scanner frequenly.

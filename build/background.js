@@ -16698,7 +16698,7 @@ var _jquery2 = _interopRequireDefault(_jquery);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Initialize db
-var db = new _zangodb2.default.Db('rts', { subscription: ['_id,comments,sub,title,url,subscribed,check'] });
+var db = new _zangodb2.default.Db('rts', { subscription: ['_id'] });
 var subs = db.collection('subscription');
 
 // Default settings | h/m/l = priority, i = interval
@@ -16863,7 +16863,7 @@ var scanner = {
     })
     // .then(console.log(`threads in database scanned`))
     .catch(function (error) {
-      return console.error(error);
+      return console.error(error, cap);
     });
   },
 
