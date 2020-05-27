@@ -11247,7 +11247,7 @@ var subscription_button = {
 
 		var btn = document.getElementById("subtothread");
 		var text = btn.getElementsByTagName("span")[0];
-		text.innerHTML = this.label.button;
+		text.textContent = this.label.button;
 	},
 
 
@@ -11352,12 +11352,11 @@ var observer = new MutationObserver(function (mutations) {
 var config = { attributes: true, childList: false, characterData: true };
 observer.observe(target, config);
 
-// check for post only if tab is active
-// otherwise when extension loads, firefox will run this content script in all opened reddit tabs
-if (!document.hidden) {
-	bg.postMessage({ greeting: "--- Reddit page loaded" });
-	post_detection();
-}
+// Notify background for debugging
+bg.postMessage({ greeting: "--- Reddit page loaded " + document.baseURI });
+
+// When loaded check if its a submission
+post_detection();
 
 console.log("-------");
 console.log("OK - Loaded correctly");
