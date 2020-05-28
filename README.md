@@ -16,9 +16,9 @@ This is a simple extension, though you can adjust 3 different levels for poll ra
 - If a comment is deleted before the notification show up, it simply would not be showing to avoid useless notification about comments that only contains "[deleted]" or "[removed]" text.
 
 ### Get this
-The `build` folder contains the unpacked version of the extension ready to use. 
+- Through [**releases section**](https://github.com/thepante/rts/releases) you can find a packed version for Firefox and Chromium (based).
+- Or you can load the extension through the `build` folder that contains the unpacked version. 
 
-You can pack it to get this permanent on the browser or run it as a temporary unpacked one.
 
 ---
 
