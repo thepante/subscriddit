@@ -11193,6 +11193,7 @@ var bg = chrome.runtime.connect({ name: "port-from-cs" });
 var div = document.getElementsByClassName("_3-miAEojrCvx_4FQ8x3P-s")[0];
 var button = document.getElementById("subtothread");
 var post = {};
+var last_url_checked = document.baseURI;
 
 // Listen messages from background
 bg.onMessage.addListener(async function (m) {
@@ -11309,14 +11310,13 @@ if (document.getElementById("rthreads-state")) {
 
 // Call button insert
 async function put_button() {
-	// Clean previous button if addon its reloaded
-	if (button) {
-		button.parentNode.removeChild(button);
-		console.log("Removed previous button...");
+	// Ensures to not add multiples buttons, for any reason...
+	if (!button) {
+		(0, _jquery2.default)(div).ready(function () {
+			subscription_button.append();
+		});
 	}
-	(0, _jquery2.default)(div).ready(function () {
-		subscription_button.append();
-	});
+
 	// console.log(`subscription_button.subscribed is set to ${subscription_button.subscribed}`);
 }
 
@@ -11334,7 +11334,7 @@ function popup_show_state() {
 // Check the url if this is a submission then send to background
 function post_detection() {
 	if (document.baseURI.includes('/comments/')) {
-		console.log("POST");
+		console.log("Submission opened");
 		var regex = /\?(.*)$/;
 		bg.postMessage({ scan: document.baseURI.replace(regex, "") });
 	}
@@ -11345,7 +11345,12 @@ var target = document.body;
 
 var observer = new MutationObserver(function (mutations) {
 	mutations.forEach(async function (mutation) {
-		post_detection();
+		// Ensures to call post_detection only if URL changed
+		// otherwise this will call for a post detection when for example: clicking report button
+		if (document.baseURI != last_url_checked) {
+			post_detection();
+			last_url_checked = document.baseURI;
+		}
 	});
 });
 
