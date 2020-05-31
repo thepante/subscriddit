@@ -24,7 +24,7 @@ This is a simple extension, though you can adjust 3 different levels for poll ra
 ---
 
 ### Use with IFTTT
-You can get notifications outside your computer, sending it trhough IFTTT. 
+You can get notifications outside your computer, sending it through IFTTT. 
 
 For example to get the new comments in Telegram.
 
