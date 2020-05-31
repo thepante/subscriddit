@@ -11310,8 +11310,8 @@ if (document.getElementById("rthreads-state")) {
 
 // Call button insert
 async function put_button() {
-	// Ensures to not add multiples buttons, for any reason...
-	if (!button) {
+	// Double check to not add multiples buttons
+	if (button == null) {
 		(0, _jquery2.default)(div).ready(function () {
 			subscription_button.append();
 		});

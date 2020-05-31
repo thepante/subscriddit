@@ -6,18 +6,24 @@ import $ from 'jquery';
 let db = new zango.Db('rts', { subscription: ['_id'] });
 let subs = db.collection('subscription');
 
-// Default settings | h/m/l = priority, i = interval
-var prefs = { h: 2, hi: 30, m: 24, mi: 60, l: 48, li: 480 };
+// Default settings
+var prefs = {
+    prioHigh: {age:  2, poll: 30},
+  prioMedium: {age: 24, poll: 60},
+     prioLow: {age: 48, poll: 480},
+    forgetHs: 72,
+};
 
 // Load user preferences
 async function load_prefs() {
-  await chrome.storage.local.get(null, (item) => {
-    console.log(item);
-    for (let key in item) {
-      if (key != undefined) {
-        prefs[key] = item[key];
-        // console.log(key, prefs[key]);
-      }
+  await chrome.storage.local.get(null, async (options) => {
+    // console.log(options);
+    if (options.prioHigh == null){
+      await chrome.storage.local.set(prefs);
+      console.log("Applied defaults settings");
+    } else {
+      await Object.assign(prefs, options);
+      console.log("Loaded saved settings");
     }
   });
 }
@@ -103,27 +109,44 @@ var post = {
   }
 };
 
-// SUBSCRIPTION MANAGER
-var manage = {
-  subscribe(thread){
+// MANAGE SUBSCRIPTIONS
+var subscriptions = {
+  add(thread){
     subs.insert(thread, (error) => {
       if (error) { throw error; }
     });
     console.log(`${thread._id} 🡺 Added new subscription with ${thread.comments} comments`);
   },
-  unsubscribe(thread){
+
+  remove(thread, auto){
+    let specific;
+
     subs.remove({_id: thread._id}, (error) => {
       if (error) { throw error; }
     });
+
     post.data.subscribed = undefined;
     post.data.check = undefined;
 
-    console.log(`${thread._id} 🡺 Removed · Subscribed ${format(thread.subscribed)}`);
+    if (auto){specific = "by clean_olds ";} else {specific = "";}
+
+    console.log(`${thread._id} 🡺 Removed ${specific}· Subscribed ${format(thread.subscribed)}`);
+  },
+
+  async clean_olds(){
+    console.log("clean_olds opened", prefs.forgetHs);
+
+    let limit = Date.now() - prefs.forgetHs * 1000 * 60 * 60;
+
+    await subs.find({subscribed: {$lt: limit }})
+      .forEach( async thread => {
+        this.remove(thread, true);
+      })
+      // .then(console.log(`threads in database scanned`))
+      .catch(error => console.error(error, cap));
   }
+
 }
-
-
-
 
 var check_post = {
   // Get number of new comments for a given thread
@@ -167,17 +190,31 @@ var scanner = {
 
   // Call scanner frequenly.
   // hs = cap since subscription, interval = seconds between searchs
-  async constant(priority){
-
+  async constant(selection){
     while (true){
-      var hs = prefs[priority];
-      var interval = prefs[priority+'i'] * 1000;
 
+      var hs;
+      var interval = 1000;
+  
+      switch (selection){
+        case 0:
+          hs = prefs.prioHigh.age;
+          interval *= prefs.prioHigh.poll;
+          break;
+        case 1:
+          hs = prefs.prioMedium.age;
+          interval *= prefs.prioMedium.poll;
+          break;
+        case 2:
+          hs = prefs.prioLow.age;
+          interval *= prefs.prioLow.poll;
+          break;
+      }
       // Delay start for lower priorities to avoid check same threads in same time
-      if (hs > prefs.h) {await new Promise(r => setTimeout(r, 3000));}
-      if (hs > prefs.m) {await new Promise(r => setTimeout(r, 3000));}
+      if (hs > prefs.prioHigh.age) {await new Promise(r => setTimeout(r, 3000));}
+      if (hs > prefs.prioMedium.age) {await new Promise(r => setTimeout(r, 3000));}
 
-      console.log(`Constant search 🡺 ${hs}|${prefs[priority+'i']}`);
+      console.log(`Constant search 🡺 ${hs}|${interval / 1000}`);
       await scanner.scan(hs);
 
       await new Promise(r => setTimeout(r, interval));
@@ -186,10 +223,10 @@ var scanner = {
 
   async start(){
     // Start constant scanning
-    // High, Medium, and Low prio
-    this.constant('h');
-    this.constant('m');
-    this.constant('l');
+    // Lower number = higher prio
+    this.constant(0);
+    this.constant(1);
+    this.constant(2);
   }
 }
 
@@ -272,12 +309,12 @@ function connected(p) {
 
     // Add new subscription
     if (m.add) {
-      manage.subscribe(m.add);
+      subscriptions.add(m.add);
     }
 
     // Remove a subscription
     if (m.remove) {
-      manage.unsubscribe(m.remove);
+      subscriptions.remove(m.remove);
     }
 
     // When a thread is opened, scan it
@@ -292,8 +329,12 @@ function connected(p) {
 
 chrome.runtime.onConnect.addListener(connected);
 
-load_prefs();
-scanner.start();
+async function start(){
+  await load_prefs();
+  await subscriptions.clean_olds();
+  scanner.start();
+}
+start();
 
 var d = new Date();
 var w = d.toLocaleTimeString();

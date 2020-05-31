@@ -16701,18 +16701,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var db = new _zangodb2.default.Db('rts', { subscription: ['_id'] });
 var subs = db.collection('subscription');
 
-// Default settings | h/m/l = priority, i = interval
-var prefs = { h: 2, hi: 30, m: 24, mi: 60, l: 48, li: 480 };
+// Default settings
+var prefs = {
+  prioHigh: { age: 2, poll: 30 },
+  prioMedium: { age: 24, poll: 60 },
+  prioLow: { age: 48, poll: 480 },
+  forgetHs: 72
+};
 
 // Load user preferences
 async function load_prefs() {
-  await chrome.storage.local.get(null, function (item) {
-    console.log(item);
-    for (var key in item) {
-      if (key != undefined) {
-        prefs[key] = item[key];
-        // console.log(key, prefs[key]);
-      }
+  await chrome.storage.local.get(null, async function (options) {
+    // console.log(options);
+    if (options.prioHigh == null) {
+      await chrome.storage.local.set(prefs);
+      console.log("Applied defaults settings");
+    } else {
+      await Object.assign(prefs, options);
+      console.log("Loaded saved settings");
     }
   });
 }
@@ -16805,9 +16811,9 @@ var post = {
   }
 };
 
-// SUBSCRIPTION MANAGER
-var manage = {
-  subscribe: function subscribe(thread) {
+// MANAGE SUBSCRIPTIONS
+var subscriptions = {
+  add: function add(thread) {
     subs.insert(thread, function (error) {
       if (error) {
         throw error;
@@ -16815,16 +16821,40 @@ var manage = {
     });
     console.log(thread._id + ' \uD83E\uDC7A Added new subscription with ' + thread.comments + ' comments');
   },
-  unsubscribe: function unsubscribe(thread) {
+  remove: function remove(thread, auto) {
+    var specific = void 0;
+
     subs.remove({ _id: thread._id }, function (error) {
       if (error) {
         throw error;
       }
     });
+
     post.data.subscribed = undefined;
     post.data.check = undefined;
 
-    console.log(thread._id + ' \uD83E\uDC7A Removed \xB7 Subscribed ' + (0, _timeago.format)(thread.subscribed));
+    if (auto) {
+      specific = "by clean_olds ";
+    } else {
+      specific = "";
+    }
+
+    console.log(thread._id + ' \uD83E\uDC7A Removed ' + specific + '\xB7 Subscribed ' + (0, _timeago.format)(thread.subscribed));
+  },
+  clean_olds: async function clean_olds() {
+    var _this2 = this;
+
+    console.log("clean_olds opened", prefs.forgetHs);
+
+    var limit = Date.now() - prefs.forgetHs * 1000 * 60 * 60;
+
+    await subs.find({ subscribed: { $lt: limit } }).forEach(async function (thread) {
+      _this2.remove(thread, true);
+    })
+    // .then(console.log(`threads in database scanned`))
+    .catch(function (error) {
+      return console.error(error, cap);
+    });
   }
 };
 
@@ -16870,25 +16900,39 @@ var scanner = {
 
   // Call scanner frequenly.
   // hs = cap since subscription, interval = seconds between searchs
-  constant: async function constant(priority) {
-
+  constant: async function constant(selection) {
     while (true) {
-      var hs = prefs[priority];
-      var interval = prefs[priority + 'i'] * 1000;
 
+      var hs;
+      var interval = 1000;
+
+      switch (selection) {
+        case 0:
+          hs = prefs.prioHigh.age;
+          interval *= prefs.prioHigh.poll;
+          break;
+        case 1:
+          hs = prefs.prioMedium.age;
+          interval *= prefs.prioMedium.poll;
+          break;
+        case 2:
+          hs = prefs.prioLow.age;
+          interval *= prefs.prioLow.poll;
+          break;
+      }
       // Delay start for lower priorities to avoid check same threads in same time
-      if (hs > prefs.h) {
+      if (hs > prefs.prioHigh.age) {
         await new Promise(function (r) {
           return setTimeout(r, 3000);
         });
       }
-      if (hs > prefs.m) {
+      if (hs > prefs.prioMedium.age) {
         await new Promise(function (r) {
           return setTimeout(r, 3000);
         });
       }
 
-      console.log('Constant search \uD83E\uDC7A ' + hs + '|' + prefs[priority + 'i']);
+      console.log('Constant search \uD83E\uDC7A ' + hs + '|' + interval / 1000);
       await scanner.scan(hs);
 
       await new Promise(function (r) {
@@ -16898,10 +16942,10 @@ var scanner = {
   },
   start: async function start() {
     // Start constant scanning
-    // High, Medium, and Low prio
-    this.constant('h');
-    this.constant('m');
-    this.constant('l');
+    // Lower number = higher prio
+    this.constant(0);
+    this.constant(1);
+    this.constant(2);
   }
 };
 
@@ -16983,12 +17027,12 @@ function connected(p) {
 
     // Add new subscription
     if (m.add) {
-      manage.subscribe(m.add);
+      subscriptions.add(m.add);
     }
 
     // Remove a subscription
     if (m.remove) {
-      manage.unsubscribe(m.remove);
+      subscriptions.remove(m.remove);
     }
 
     // When a thread is opened, scan it
@@ -17002,8 +17046,12 @@ function connected(p) {
 
 chrome.runtime.onConnect.addListener(connected);
 
-load_prefs();
-scanner.start();
+async function start() {
+  await load_prefs();
+  await subscriptions.clean_olds();
+  scanner.start();
+}
+start();
 
 var d = new Date();
 var w = d.toLocaleTimeString();

@@ -1,43 +1,57 @@
 var storage = chrome.storage.local;
 
+var element = {
+  get(item){
+    return document.querySelector("#"+item).value
+  },
+  set(item, value){
+    document.querySelector("#"+item).value = value;
+  }
+}
+
 function saveOptions(e) {
   storage.set({
-     h: document.querySelector("#h").value,
-    hi: document.querySelector("#hi").value,
-     m: document.querySelector("#m").value,
-    mi: document.querySelector("#mi").value,
-     l: document.querySelector("#l").value,
-    li: document.querySelector("#li").value,
-  });
+      prioHigh: {age: element.get("h"), poll: element.get("hi")},
+    prioMedium: {age: element.get("m"), poll: element.get("mi")},
+       prioLow: {age: element.get("l"), poll: element.get("li")},
+      forgetHs: element.get("forgetHs"),
+ });
 
   bg.postMessage({load_prefs: "!"});
 }
 
 function restoreOptions() {
-  storage.get(null, function(items) {
-    for (key in items) {
-      if (key == 'color'){
-        console.log(key, "is present");
-      }
-      else if (items[key] != undefined){
+  storage.get(null, function(options) {
+    // bg.postMessage({greeting: options});
 
-        console.log(key, items[key]);
-        var id = '#'+key;
-        document.querySelector(id).value = items[key];
+    // high prio
+    element.set("h", options.prioHigh.age);
+    element.set("hi", options.prioHigh.poll);
 
-      }
-    }
+    // medium prio
+    element.set("m", options.prioMedium.age);
+    element.set("mi", options.prioMedium.poll);
+
+    // low prio
+    element.set("l", options.prioLow.age);
+    element.set("li", options.prioLow.poll);
+
+    // rest
+    element.set("forgetHs", options.forgetHs);
+
  });
 
+ // make background load updated settings
  bg.postMessage({load_prefs: "!"});
 
 }
 
-document.addEventListener("DOMContentLoaded", restoreOptions);
-document.querySelector("form").addEventListener("submit", saveOptions);
-
 var bg = chrome.runtime.connect({name:"options"});
 bg.postMessage({greeting: "--- options loaded!"});
+
+document.addEventListener("DOMContentLoaded", restoreOptions);
+document.querySelector("form").addEventListener("submit", saveOptions);
+restoreOptions();
 
 // Restricts input for the given textbox to the given inputFilter function.
 // From https://stackoverflow.com/a/469362/11003517

@@ -4,7 +4,7 @@ Web extension to subscribe submissions on Reddit.
 
 Then this was my final project for Harvard CS50. Now, with that already concluded, anybody can contribute.
 
-![screenshot](https://i.imgur.com/TUUonPt.png)  
+![screenshot](https://i.imgur.com/TUUonPt.png)
 
 ---
 
@@ -14,6 +14,7 @@ This is a simple extension, though you can adjust 3 different levels for poll ra
 
 - It was made aiming for use on small submisissions, it can be buggy in threads with +450 comments.
 - If a comment is deleted before the notification show up, it simply would not be showing to avoid useless notification about comments that only contains "[deleted]" or "[removed]" text.
+- Automattically Remove subscriptions that are old. By default setted at 72 hours.
 
 ### Get this
 - Through [**releases section**](https://github.com/thepante/rts/releases) you can find a packed version for Firefox and Chromium (based).
@@ -32,9 +33,8 @@ npm install zangodb jquery timeago.js
 
 #### To-do list
  - Panel to manage subscriptions
- - Autoremove old subscriptions
  - Better settings UI
- - Improve 'settings' code
+ - More options about auto-remove subscriptions
 
 ---
 
