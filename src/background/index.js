@@ -12,6 +12,7 @@ var prefs = {
   prioMedium: {age: 24, poll: 60},
      prioLow: {age: 48, poll: 480},
     forgetHs: 72,
+  webhookKey: "",
 };
 
 // Load user preferences
@@ -284,12 +285,29 @@ async function get_comments_rss(thread, saved_comments, new_comments){
         });
 
         notification.send(title, comment, author, permalink);
+        
+        if (Object.values(prefs["webhookKey"]).length == 22) {
+          await ifttt(author, title, comment, permalink);
+        }
         await new Promise(r => setTimeout(r, 1000));
 
       }
     })
   });
 
+}
+
+async function ifttt(username, title, comment, permalink){
+  await $.ajax({
+    url: `https://maker.ifttt.com/trigger/new_comment/with/key/${prefs.webhookKey}`,
+    type: "POST",
+    data: {
+      "value1": `<a href='${permalink}'>${title.substring(0, 50)}</a><br>${username} ${comment}`
+    }, 
+    success: function(d){ 
+         console.log("IFTTT notification send");
+     },
+  })
 }
 
 // Communicate with content js

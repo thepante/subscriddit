@@ -15,6 +15,7 @@ function saveOptions(e) {
     prioMedium: {age: element.get("m"), poll: element.get("mi")},
        prioLow: {age: element.get("l"), poll: element.get("li")},
       forgetHs: element.get("forgetHs"),
+      webhookKey: element.get("webhookKey"),
  });
 
   bg.postMessage({load_prefs: "!"});
@@ -38,6 +39,7 @@ function restoreOptions() {
 
     // rest
     element.set("forgetHs", options.forgetHs);
+    element.set("webhookKey", options.webhookKey);
 
  });
 
