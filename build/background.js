@@ -17020,7 +17020,7 @@ async function ifttt(username, title, comment, permalink) {
     url: 'https://maker.ifttt.com/trigger/new_comment/with/key/' + prefs.webhookKey,
     type: "POST",
     data: {
-      "value1": '<a href=\'' + permalink + '\'>' + title.substring(0, 50) + '</a><br>' + username + ' ' + comment
+      "value1": '<a href=\'' + permalink + '\'>' + title.substring(0, 50) + '</a><br>' + comment + '<br><code>---</code><br><code>' + username.slice(0, -1) + '</code>'
     },
     success: function success(d) {
       console.log("IFTTT notification send");
