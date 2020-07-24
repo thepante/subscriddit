@@ -1,25 +1,26 @@
 
-### Thread Subscribe for Reddit
-Web extension to subscribe submissions on Reddit.
+### Subscriddit: a thread subscriber for Reddit
+Web extension that adds the option to subscribe to submissions on Reddit.
 
-Then this was my final project for Harvard CS50. Now, with that already concluded, anybody can contribute.
+Back then this was my final project for Harvard CS50. With that already concluded, now anybody can contribute.
 
 ![screenshot](https://i.imgur.com/TUUonPt.png)
 
 ---
 
-Right now I'm trying to improve it.
+**Right now I'm working on a new version with a different aproach.**
 
-This is a simple extension, though you can adjust 3 different levels for poll rate priorities based on its submission time. Since an old submission may not be getting new comments as frequent as a new one would be, older submissions get 'scanned' less frequently.
+This is a simple extension, though you can adjust 3 different levels for poll rate priorities based on its submission time; Old submissions may not be getting new comments as frequent as newer ones, so those got 'scanned' less frequently.
 
-- It was made aiming for use on small submisissions, it can be buggy in threads with +450 comments.
-- If a comment is deleted before the notification show up, it simply would not be showing to avoid useless notification about comments that only contains "[deleted]" or "[removed]" text.
-- Automatically remove subscriptions that are old. By default setted at 72 hours.
-- Support to send notifications through IFTTT (see below to instructions).
+- Made aiming for use on small submisissions. Can be buggy on threads with +450 comments.
+- If a comment is deleted before the notification shows up, it simply would not be showing to avoid useless notification about comments that only contains "[deleted]" or "[removed]" text.
+- Automatically remove subscriptions that are *old*: by default setted at 72 hours.
+- Support to send notifications through IFTTT (see below to instructions for using it with Telegram).
 
 ### Get this
-- Through [**releases section**](https://github.com/thepante/rts/releases) you can find a packed version for Firefox and Chromium based browsers.
-- Or you can load the extension through the `build` folder that contains the unpacked version. 
+- Through [**releases section**](https://github.com/thepante/rts/releases) you can find a packed version for Firefox and Chromium browsers.
+- Or you can load the extension through the `build` folder that contains the unpacked version.
+- On Chrome: you have to use the unpacked one.
 
 ---
 
@@ -42,7 +43,9 @@ You can get notifications outside your computer sending it through IFTTT. Here a
  > 9. Copy your key
  > 10. Paste that key in the addon preferences, in the field for `IFTTT Webhooks Key` and save
 
- With that done, the nexts notifications would be also send to you via Telegram.
+ With that done, next notifications would be also send to you via Telegram.
+
+ To stop receiving notifications through IFTTT: just empty the Webhooks Key box at the addon preferences.
 
 ---
 
