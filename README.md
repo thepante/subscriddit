@@ -49,18 +49,17 @@ You can get notifications outside your computer sending it through IFTTT. Here a
 
 ---
 
-If you want to make changes and build it, it does uses the following npm modules:
-zangodb, jquery and timeago.js
+**Dependencies:** zangodb, jquery, timeago.js
 
+```bash
+npm install  # To install the required dependencies
+npm build    # To build the extension ready to use (as unpacked) or then pack it
 ```
-npm install zangodb jquery timeago.js
-```
+
 ----
 
-#### To-do list
- - Panel to manage subscriptions
- - Better settings UI
- - More options about auto-remove subscriptions
+#### Note:
+I'm working on different approach. The addon its being rewritten. The then to do list now are being treated on that new version. This addon published as is (version `0.1`) will have no updates.
 
 ---
 
