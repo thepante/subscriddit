@@ -1,6 +1,3 @@
-import * as firebase from 'firebase/app';
-import '@firebase/messaging';
-
 const firebaseConfig = {
   apiKey: "AIzaSyCLR4W3kuEHnPgASLvEOLLYp-VkQ46t12U",
   authDomain: "subscriddit.firebaseapp.com",
