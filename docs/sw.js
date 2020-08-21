@@ -1,3 +1,6 @@
+importScripts('https://www.gstatic.com/firebasejs/7.18.0/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/7.18.0/firebase-messaging.js');
+
 const firebaseConfig = {
   apiKey: "AIzaSyCLR4W3kuEHnPgASLvEOLLYp-VkQ46t12U",
   authDomain: "subscriddit.firebaseapp.com",
