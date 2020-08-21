@@ -14,7 +14,7 @@ const messaging = firebase.messaging();
 
 const requestSW = () => {
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js", { scope: "/subscriddit/" })
+    navigator.serviceWorker.register("./firebase-messaging-sw.js", { scope: "/subscriddit/" })
       .then(function (reg) {
         if (reg.installing) {
           console.log("Service worker installing");
