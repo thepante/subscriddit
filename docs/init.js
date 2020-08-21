@@ -3,7 +3,7 @@ const messaging = firebase.messaging();
 
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js", { scope: "/" })
+  navigator.serviceWorker.register("./sw.js", { scope: "/subscriddit/" })
     .then(function (reg) {
       if (reg.installing) {
         console.log("Service worker installing");
