@@ -1,3 +1,6 @@
+### Work in progress. Use `master` branch instead
+
+---
 
 ### Subscriddit: a thread subscriber for Reddit
 Web extension that adds the option to subscribe to submissions on Reddit.
