@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { transform, prettyPrint } from 'camaro';
+import { transform } from 'camaro';
 import { getSubscriptionNumComments } from './manager.js';
 import config from './config.js';
 
@@ -13,7 +13,6 @@ const useragent = () => {
   const bn = ['Firefox', 'Chrome', 'Chromium'].random();
   const bv = Math.floor(Math.random() * (80 - 58 + 1) + 58);
   const ua = `Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:79.0) Gecko/20100101 ${bn}/${bv}.0`;
-  // console.log(ua);
   return ua;
 }
 
@@ -102,11 +101,7 @@ const parser = async (format, threadID, pushshift) => {
 export const getNumComments = async (threadID) => {
   // console.log(`getNumComments getting from ${threadID}...`);
   const data = await parser('json', threadID);
-  if (data.status === 'ok'){
-    return Number(data.data['num_comments']);
-  } else {
-    return -1;
-  }
+  return (data.status === 'ok') ? Number(data.data['num_comments']) : -1;
 }
 
 
@@ -122,17 +117,13 @@ export const getDiffComments = async (threadID) => {
 }
 
 /**
- * Gives the difference in the number of current vs saved comments.
+ * Gives the difference in the number of current on Pushshift API vs saved comments.
  * @param {string} threadID - Submission ID
  * @return {number} Difference
  */
 export const getPushshiftNumComments = async (threadID) => {
   const data = await parser('json', threadID, true);
-  if (data.status === 'ok'){
-    return Number(data.data[0]['num_comments']);
-  } else {
-    return -1;
-  }
+  return (data.status === 'ok') ? Number(data.data[0]['num_comments']) : -1;
 }
 
 
@@ -208,22 +199,15 @@ export const parseComments = async (threadID, amount, since) => {
 
     // console.warn(entries[i].id, removed, updated, '<', since, '=', updated < since)
 
-    if (updated < since) {
-      continue;
-    }
-
-    if (updated > latestCommentTime) {
-      latestCommentTime = updated;
-    }
+    if (updated < since) continue;
+    if (updated > latestCommentTime) latestCommentTime = updated;
 
     if (removed || ignored) {
       ignoredCount++;
       continue;
     }
 
-    if (content.length > 200) {
-      content = content.substring(0, 200) + "...";
-    }
+    if (content.length > 200) content = content.substring(0, 200) + "...";
 
     const comment = [
       entries[i].id.slice(3),
@@ -234,9 +218,7 @@ export const parseComments = async (threadID, amount, since) => {
     comments.push(comment);
     collected++;
 
-    if (collected === amount) {
-      break;
-    };
+    if (collected === amount) break;
   };
 
   return {ignored: ignoredCount, comments: comments, newertime: latestCommentTime};
