@@ -1,0 +1,23 @@
+{
+  "name": "subscriddit",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "./src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --experimental-modules src/app.js",
+    "debug-express": "DEBUG=express:* node --experimental-modules src/app.js"
+  },
+  "keywords": [],
+  "author": "github.com/thepante",
+  "license": "ISC",
+  "dependencies": {
+    "camaro": "^6.0.3",
+    "conf": "^7.1.2",
+    "diskdb": "^0.1.17",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.0",
+    "ws": "^7.3.1"
+  }
+}

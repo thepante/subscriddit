@@ -1,0 +1,22 @@
+{
+  "name": "subscriddit",
+  "version": "1.0.0",
+  "description": "Adds the functionality to subscribe to submissions on Reddit",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf build && webpack && npm run copy:build",
+    "copy:build": "cp ./src/style.css ./src/options.html ./src/options.js ./icons/48.png manifest.json ./build"
+  },
+  "license": "MPL-2.0",
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-react": "^7.10.1",
+    "babel-loader": "^8.1.0",
+    "webpack": "^2.3.2"
+  },
+  "dependencies": {
+    "jquery": "^3.5.1",
+    "regenerator-runtime": "^0.13.5"
+  }
+}

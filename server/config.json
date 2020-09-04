@@ -1,0 +1,35 @@
+{
+	"server": {
+		"name": "Subscriddit Server",
+		"http": {
+			"port": 3000,
+			"enabled": false
+		},
+		"ws": {
+			"port": 8080
+		}
+	},
+	"logs": {
+		"enabled": true,
+		"save": true,
+		"requests": false,
+		"scans": true
+	},
+	"hsAutoUnsub": 72,
+  "scan": [
+    [true, 2, 10],
+    [true, 24, 30],
+    [true, 72, 120]
+  ],
+  "notifications": {
+    "osnative": false,
+    "websocket": true,
+    "console": true
+  },
+  "ifttt": {
+    "enabled": false,
+    "preFormated": true,
+    "webhooksKey": ""
+  },
+  "ignored": []
+}

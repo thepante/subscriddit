@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <style>
+      * {
+        font-family: 'sans', arial;
+      }
+      .priority {
+        border-bottom: 1px solid #424242;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        padding-left: 10px;
+      }
+
+      h2 {
+        font-size: 16px;
+        padding-top: 5px;
+        margin-top: 10px;
+        margin-bottom: 2px;
+      }
+
+      input {
+        width: 45;
+        border-radius: 2px;
+        color: #222222;
+        font-weight: bold;
+      }
+
+
+      label {
+        margin-right: 10px;
+      }
+
+      p {
+        color: rgb(39, 39, 39);
+        font-size: 12px;
+        margin: 0px;
+      }
+
+      button {
+        margin-top: 10px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <form>
+      <div class="priority">
+        <h2>Subscriddit server address</h2>
+        <label><input type="text" id="serverAddress"></label>
+      </div>
+
+      <p>If not specified, will try to connect to default at <em>localhost:8080</em></p>
+
+      <button type="submit">Save</button>
+    </form>
+
+    <script src="options.js"></script>
+  </body>
+</html>

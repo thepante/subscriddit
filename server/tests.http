@@ -1,0 +1,28 @@
+GET http://localhost:3000/ HTTP/1.1
+
+###
+
+GET http://localhost:3000/subscriptions/1000 HTTP/1.1
+
+###
+
+GET http://localhost:3000/status/gs5mmy HTTP/1.1
+
+###
+
+GET http://localhost:3000/remove/gs5mmy HTTP/1.1
+
+###
+
+POST http://localhost:3000/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "add": {
+    "id": "gs5mmy",
+    "num_comments": 16,
+    "sub": "r/goldenretriever",
+    "title": "A young Lou, probably being told what not to do in the house.",
+    "checked": 1598570080
+  }
+}

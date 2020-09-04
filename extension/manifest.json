@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "Subscriddit",
+  "description": "Adds the functionality to subscribe to submissions on Reddit",
+  "version": "0.2.0",
+  "content_scripts": [
+    {
+      "matches": ["https://www.reddit.com/*"],
+      "css": ["style.css"],
+      "js":  ["content.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "options_ui": {
+    "page": "options.html"
+  },
+  "permissions": [
+    "notifications",
+    "storage",
+    "http://localhost/"
+  ]
+}
