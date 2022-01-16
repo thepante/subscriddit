@@ -1,3 +1,6 @@
+## Deprecated - Reddit now has an option to follow threads
+
+---
 
 ### Subscriddit: a thread subscriber for Reddit
 Web extension that adds the option to subscribe to submissions on Reddit.
